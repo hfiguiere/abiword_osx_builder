@@ -253,7 +253,7 @@ def do_dmg():
             -volname \"AbiWord\" \
             -fs HFS+ \
             -fsargs \"-c c=64,a=16,e=16\" \
-            -format UDRW \"Abiword.dmg\""
+            -format UDRW \"AbiWord.dmg\""
     p = Popen(cmd, shell=True)
     p.wait()
     rmtree("dmg")
