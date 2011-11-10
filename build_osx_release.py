@@ -22,6 +22,7 @@ from os import chdir, environ, getcwd, listdir, mkdir, path
 from shutil import copy2, rmtree
 from subprocess import PIPE, Popen
 from sys import argv, exit
+from argparse import ArgumentParser
 
 
 def environment_prepare():
@@ -259,15 +260,97 @@ def do_dmg():
     rmtree("dmg")
     copy2("AbiWord.dmg", environ["HOME"] + "/Desktop/")
 
+
 if __name__ == "__main__":
-    current_dir = getcwd()
-    environment_prepare()
-    macports_install()
-    dependencies_install()
-    abiword_install()
-    do_app()
-    do_dmg()
-    environment_clean(current_dir)
-    print "****************************************************"
-    print "* AbiWord.dmg was created in you ~/Desktop. Enjoy! *"
-    print "****************************************************"
+    parser = ArgumentParser(description="Automated dmg generator")
+    parser.add_argument("--macports_path",
+                        action="store",
+                        dest="macports_path",
+                        help="This option will use your current macports' \
+                              installation from MACPORTS_PATH.\n\
+                              ATTENTION: Without this option, macports will \
+                              be downloaded and installed in: \
+                              /tmp/abisource/macports")
+
+    parser.add_argument("--abisource_path",
+                        action="store",
+                        dest="abi_path",
+                        default=False,
+                        help="This option will consider that you have \
+                              AbiWord's sources in your computer, located at \
+                              ABISOURCE_PATH and want to build it and NOT a \
+                              specific version from our SVN.")
+
+    parser.add_argument("--abisource_revision",
+                        action="store",
+                        dest="abi_rev",
+                        help="This option will get a specific revision from \
+                              AbiWord's SVN. \
+                              ATTETION: If this option isn't passed, SVN's \
+                              trunk will be used.")
+
+    parser.add_argument("--abiword_version",
+                        action="store",
+                        dest="abi_version",
+                        help="This option will get a specific version from \
+                              AbiWord's SVN. \
+                              ATTETION: If this option isn't passed, SVN's \
+                              trunk will be used.")
+
+
+    parser.add_argument("--no_deps",
+                        action="store_true",
+                        dest="no_deps",
+                        default=False,
+                        help="This option won't install AbiWord's \
+                              dependencies in your computer. So, is YOUR \
+                              WORK install all needed dependencies. Of \
+                              course, you'll need to install macports before.")
+
+    parser.add_argument("--start_from_build",
+                        action="store_true",
+                        dest="start_from_build",
+                        default=False,
+                        help="This option will consider that you have \
+                              macports and all AbiWord's dependencies \
+                              installed. \
+                              ATTENTION: This options will build AbiWord and \
+                              create a dmg file. So, is REALLY NECESSARY \
+                              that you pass --abisource_path option.")
+
+    parser.add_argument("--start_from_app",
+                        action="store",
+                        dest="start_from_app",
+                        help="This option will use a generated .app file \
+                              to fix all linkage and put all nedded libs \
+                              into .app in a specific folder. After that a \
+                              dmg file will be created. \
+                              ATTENTION: Is REALLY NECESSARY that you pass \
+                              --macports_path option.")
+
+    parser.add_argument("--start_from_linkage_fixed",
+                        action="store",
+                        dest="start_from_linkage_fixed",
+                        help="This option will use a generated .app file \
+                              with linkage working properly to create a \
+                              .dmg file.\
+                              ATTENTION: Is REALLY NECESSARY that you pass \
+                              --macports_path option.")
+
+    if len(argv) < 2:
+        parser.print_help()
+        exit()
+    else:
+        args = parser.parse_args()
+
+#    current_dir = getcwd()
+#    environment_prepare()
+#    macports_install()
+#    dependencies_install()
+#    abiword_install()
+#    do_app()
+#    do_dmg()
+#    environment_clean(current_dir)
+#    print "****************************************************"
+#    print "* AbiWord.dmg was created in you ~/Desktop. Enjoy! *"
+#    print "****************************************************"
